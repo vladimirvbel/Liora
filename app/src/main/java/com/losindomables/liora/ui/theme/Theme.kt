@@ -12,25 +12,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = LioraPurple,
+    secondary = LioraTeal,
+    tertiary = BrightAqua,
+    background = DarkNavy, // El azul oscuro es perfecto para el fondo en modo oscuro
+    surface = DarkNavy,
+    onPrimary = White,
+    onSecondary = DarkNavy,
+    onBackground = LightLilac, // El lila claro sirve muy bien para textos sobre el fondo oscuro
+    onSurface = LightLilac
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primary = LioraPurple,
+    secondary = LioraTeal,
+    tertiary = BrightAqua,
+    background = LightLilac, // Un fondo muy suave para el modo claro
+    surface = White,
+    onPrimary = White,
+    onSecondary = DarkNavy,
+    onBackground = DarkNavy,
+    onSurface = DarkNavy
 )
 
 @Composable

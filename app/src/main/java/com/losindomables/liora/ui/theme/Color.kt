@@ -2,10 +2,13 @@ package com.losindomables.liora.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// Paleta principal de Liora
+val DarkNavy = Color(0xFF0B132B)
+val LioraPurple = Color(0xFF785FD1)
+val LioraTeal = Color(0xFF5BC0BE)
+val LightLilac = Color(0xFFE7DFF7)
+val BrightAqua = Color(0xFF6FFFE9)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+// Colores extra para textos y contrastes (opcional pero recomendado)
+val White = Color(0xFFFFFFFF)
+val Black = Color(0xFF000000)
