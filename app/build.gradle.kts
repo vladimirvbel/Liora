@@ -61,6 +61,7 @@ dependencies {
 
     // Persistencia de sesión (token JWT y rol)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.security.crypto)
 
     // ViewModel para Compose
     implementation(libs.androidx.lifecycle.viewmodel.compose)
