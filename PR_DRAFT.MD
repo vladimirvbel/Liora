@@ -32,7 +32,7 @@ Closes #6 (ID Issue)
 ```
  * Si el issue está en **otro repositorio** (por ejemplo, el tablero central):
 ```text
-Closes usuario/repositorio#6 = Closes vladimirbvel/Liora#6
+Closes usuario/repositorio#6 = Closes vladimirvbel/Liora#6
 ```
 3. En el botón verde de creación, despliega la flecha y selecciona **"Create draft pull request"**.
 
