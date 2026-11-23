@@ -64,4 +64,8 @@ dependencies {
 
     // ViewModel para Compose
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    // Tests (MockWebServer y Coroutines)
+    testImplementation(libs.mockwebserver)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
