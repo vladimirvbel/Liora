@@ -20,10 +20,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             LioraTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    // TODO(#14): temporal, restaurar Greeting al terminar la verificación
+                    TempSessionTest(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
