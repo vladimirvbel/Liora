@@ -12,34 +12,36 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = LioraPurple,
-    secondary = LioraTeal,
-    tertiary = BrightAqua,
-    background = DarkNavy, // El azul oscuro es perfecto para el fondo en modo oscuro
-    surface = DarkNavy,
-    onPrimary = White,
-    onSecondary = DarkNavy,
-    onBackground = LightLilac, // El lila claro sirve muy bien para textos sobre el fondo oscuro
-    onSurface = LightLilac
+    primary = LioraRose,
+    onPrimary = LioraBlack,
+    secondary = LioraGold,
+    onSecondary = LioraBlack,
+    tertiary = LioraGold,
+    onTertiary = LioraBlack,
+    background = LioraBlack,
+    surface = LioraBlack,
+    onBackground = LioraCoral,
+    onSurface = LioraCoral
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = LioraPurple,
-    secondary = LioraTeal,
-    tertiary = BrightAqua,
-    background = LightLilac, // Un fondo muy suave para el modo claro
+    primary = LioraRose,
+    onPrimary = LioraBlack,
+    secondary = LioraGold,
+    onSecondary = LioraBlack,
+    tertiary = LioraGold,
+    onTertiary = LioraBlack,
+    background = LioraCoral,
     surface = White,
-    onPrimary = White,
-    onSecondary = DarkNavy,
-    onBackground = DarkNavy,
-    onSurface = DarkNavy
+    onBackground = LioraBlack,
+    onSurface = LioraBlack
 )
 
 @Composable
 fun LioraTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    // Dynamic color is false para que el theme de Android 12+ no reemplace la paleta de marca
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
