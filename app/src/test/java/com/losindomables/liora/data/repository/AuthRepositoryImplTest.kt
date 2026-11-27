@@ -2,8 +2,6 @@ package com.losindomables.liora.data.repository
 
 import com.losindomables.liora.data.local.SessionManager
 import com.losindomables.liora.data.remote.AuthApi
-import com.losindomables.liora.data.remote.dto.AuthResponse
-import com.losindomables.liora.data.remote.dto.LoginRequest
 import com.losindomables.liora.domain.model.AuthError
 import com.losindomables.liora.domain.model.AuthResult
 import com.losindomables.liora.domain.model.Role
@@ -11,45 +9,76 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
-import okhttp3.ResponseBody.Companion.toResponseBody
+import okhttp3.OkHttpClient
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.SocketPolicy
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
-import retrofit2.Response
-import java.io.IOException
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 class AuthRepositoryImplTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private val fakeSessionManager = FakeSessionManager()
+    private lateinit var mockWebServer: MockWebServer
+    private lateinit var authApi: AuthApi
+    private lateinit var repository: AuthRepositoryImpl
+
+    @Before
+    fun setUp() {
+        mockWebServer = MockWebServer()
+        mockWebServer.start()
+
+        val okHttpClient = OkHttpClient.Builder()
+            .connectTimeout(1, TimeUnit.SECONDS)
+            .readTimeout(1, TimeUnit.SECONDS)
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(mockWebServer.url("/"))
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        authApi = retrofit.create(AuthApi::class.java)
+        repository = AuthRepositoryImpl(authApi, fakeSessionManager, testDispatcher)
+    }
+
+    @After
+    fun tearDown() {
+        mockWebServer.shutdown()
+    }
 
     @Test
-    fun `login success saves session and returns AuthResult Success`() = runTest(testDispatcher) {
-        val fakeApi = object : FakeAuthApi() {
-            override suspend fun login(request: LoginRequest): Response<AuthResponse> {
-                return Response.success(AuthResponse("test-token", "CLIENTE"))
+    fun `login returns Success 200 and saves session`() = runTest(testDispatcher) {
+        val jsonResponse = """
+            {
+                "token": "jwt-mock-token-123",
+                "role": "CLIENTE"
             }
-        }
-        val repository = AuthRepositoryImpl(fakeApi, fakeSessionManager, testDispatcher)
+        """.trimIndent()
+
+        mockWebServer.enqueue(MockResponse().setResponseCode(200).setBody(jsonResponse))
 
         val result = repository.login("user@test.com", "password123")
 
         assertTrue(result is AuthResult.Success)
         val success = result as AuthResult.Success
-        assertEquals("test-token", success.session.token)
+        assertEquals("jwt-mock-token-123", success.session.token)
         assertEquals(Role.CLIENTE, success.session.role)
-        assertEquals("test-token", fakeSessionManager.savedToken)
+        assertEquals("jwt-mock-token-123", fakeSessionManager.savedToken)
         assertEquals("CLIENTE", fakeSessionManager.savedRole)
     }
 
     @Test
-    fun `login returns InvalidCredentials on 401 response`() = runTest(testDispatcher) {
-        val fakeApi = object : FakeAuthApi() {
-            override suspend fun login(request: LoginRequest): Response<AuthResponse> {
-                return Response.error(401, "".toResponseBody(null))
-            }
-        }
-        val repository = AuthRepositoryImpl(fakeApi, fakeSessionManager, testDispatcher)
+    fun `login returns InvalidCredentials on HTTP 401`() = runTest(testDispatcher) {
+        mockWebServer.enqueue(MockResponse().setResponseCode(401).setBody("""{"error":"Unauthorized"}"""))
 
         val result = repository.login("user@test.com", "wrongpass")
 
@@ -58,13 +87,8 @@ class AuthRepositoryImplTest {
     }
 
     @Test
-    fun `register returns EmailAlreadyRegistered on 409 response`() = runTest(testDispatcher) {
-        val fakeApi = object : FakeAuthApi() {
-            override suspend fun register(request: com.losindomables.liora.data.remote.dto.RegisterRequest): Response<AuthResponse> {
-                return Response.error(409, "".toResponseBody(null))
-            }
-        }
-        val repository = AuthRepositoryImpl(fakeApi, fakeSessionManager, testDispatcher)
+    fun `register returns EmailAlreadyRegistered on HTTP 409`() = runTest(testDispatcher) {
+        mockWebServer.enqueue(MockResponse().setResponseCode(409).setBody("""{"error":"Email conflict"}"""))
 
         val result = repository.register("Vanesa", "existing@test.com", "password123")
 
@@ -73,28 +97,26 @@ class AuthRepositoryImplTest {
     }
 
     @Test
-    fun `login returns NetworkError when IOException occurs`() = runTest(testDispatcher) {
-        val fakeApi = object : FakeAuthApi() {
-            override suspend fun login(request: LoginRequest): Response<AuthResponse> {
-                throw IOException("No internet connection")
-            }
-        }
-        val repository = AuthRepositoryImpl(fakeApi, fakeSessionManager, testDispatcher)
+    fun `register returns ValidationError on HTTP 400`() = runTest(testDispatcher) {
+        val errorMsg = "La contraseña debe contener letras y números."
+        mockWebServer.enqueue(MockResponse().setResponseCode(400).setBody(errorMsg))
+
+        val result = repository.register("Vanesa", "invalid@test.com", "short")
+
+        assertTrue(result is AuthResult.Failure)
+        val failure = result as AuthResult.Failure
+        assertTrue(failure.error is AuthError.ValidationError)
+        assertEquals(errorMsg, (failure.error as AuthError.ValidationError).message)
+    }
+
+    @Test
+    fun `login returns NetworkError on socket timeout`() = runTest(testDispatcher) {
+        mockWebServer.enqueue(MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE))
 
         val result = repository.login("user@test.com", "password123")
 
         assertTrue(result is AuthResult.Failure)
         assertEquals(AuthError.NetworkError, (result as AuthResult.Failure).error)
-    }
-}
-
-private open class FakeAuthApi : AuthApi {
-    override suspend fun register(request: com.losindomables.liora.data.remote.dto.RegisterRequest): Response<AuthResponse> {
-        throw NotImplementedError()
-    }
-
-    override suspend fun login(request: LoginRequest): Response<AuthResponse> {
-        throw NotImplementedError()
     }
 }
 
