@@ -51,12 +51,15 @@ fun AppNavigation(
 
     val uiState by authViewModel.uiState.collectAsState()
 
-    // Si ya existe sesión guardada o recién iniciada, va directo a HOME limpiando la pila de Auth
-    LaunchedEffect(activeSession, uiState.session) {
-        if ((activeSession != null) || (uiState.session != null)) {
+    // Basamos la navegacion SOLO en la sesion persistida localmente.
+    // Esto evita colisiones (recomposition loops) con el uiState.session del ViewModel
+    LaunchedEffect(activeSession) {
+        if (activeSession != null) {
             onAuthSuccess()
             navController.navigate(AuthRoutes.HOME) {
-                popUpTo(AuthRoutes.LOGIN) { inclusive = true }
+                // Borra todo el historial previo
+                popUpTo(0) { inclusive = true }
+                launchSingleTop = true
             }
         }
     }
