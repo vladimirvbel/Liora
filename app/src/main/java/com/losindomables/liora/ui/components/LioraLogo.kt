@@ -17,7 +17,7 @@ fun LioraLogo(
     modifier: Modifier = Modifier,
     isDark: Boolean = isSystemInDarkTheme()
 ) {
-    val logoRes = if (isDark) R.drawable.ic_liora_logo_gold else R.drawable.ic_liora_logo_black
+    val logoRes = if (isDark) R.drawable.color_rosa_empolvado else R.drawable.color_negro
     Image(
         painter = painterResource(id = logoRes),
         contentDescription = "Liora",

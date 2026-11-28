@@ -28,6 +28,20 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.clickable
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Icon
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.draw.shadow
+import com.losindomables.liora.R
 import com.losindomables.liora.ui.components.LioraLogo
 import com.losindomables.liora.ui.components.LioraPasswordField
 import com.losindomables.liora.ui.components.LioraPrimaryButton
@@ -74,66 +88,195 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = "Aprende, crea, viste.",
-                    style = MaterialTheme.typography.titleMedium,
+                    text = "¡Bienvenido de nuevo!",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground
+                )
+                
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Accede a tu cuenta",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
-
-                Text(
-                    text = "Iniciar Sesión",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground,
+                
+                val isDark = isSystemInDarkTheme()
+                val cardColor = if (isDark) Color(0xFF1E1D1D) else Color.White
+                
+                Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Start
-                )
+                    shape = RoundedCornerShape(16.dp),
+                    color = cardColor,
+                    shadowElevation = 8.dp
+                ) {
+                    Column(
+                        modifier = Modifier.padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        LioraTextField(
+                            value = uiState.email,
+                            onValueChange = onEmailChanged,
+                            label = "Correo electrónico",
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.icon_mail),
+                                    contentDescription = "Icono de correo",
+                                    tint = if(isDark) Color.White else Color.Black
+                                )
+                            },
+                            errorMessage = uiState.emailError,
+                            keyboardType = KeyboardType.Email,
+                            imeAction = ImeAction.Next,
+                            enabled = !uiState.isLoading
+                        )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                LioraTextField(
-                    value = uiState.email,
-                    onValueChange = onEmailChanged,
-                    label = "Correo Electrónico",
-                    errorMessage = uiState.emailError,
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next,
-                    enabled = !uiState.isLoading
-                )
+                        LioraPasswordField(
+                            value = uiState.password,
+                            onValueChange = onPasswordChanged,
+                            label = "Contraseña",
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.icon_lock),
+                                    contentDescription = "Icono de candado",
+                                    tint = if(isDark) Color.White else Color.Black
+                                )
+                            },
+                            errorMessage = uiState.passwordError,
+                            imeAction = ImeAction.Done,
+                            onImeAction = onLoginClick,
+                            enabled = !uiState.isLoading
+                        )
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        Text(
+                            text = "¿Olvidaste tu contraseña?",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.End
+                        )
+                        
+                        Spacer(modifier = Modifier.height(24.dp))
 
-                Spacer(modifier = Modifier.height(12.dp))
-
-                LioraPasswordField(
-                    value = uiState.password,
-                    onValueChange = onPasswordChanged,
-                    label = "Contraseña",
-                    errorMessage = uiState.passwordError,
-                    imeAction = ImeAction.Done,
-                    onImeAction = onLoginClick,
-                    enabled = !uiState.isLoading
-                )
+                        LioraPrimaryButton(
+                            text = "Iniciar sesión",
+                            onClick = onLoginClick,
+                            isLoading = uiState.isLoading
+                        )
+                        
+                        Spacer(modifier = Modifier.height(24.dp))
+                        
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            HorizontalDivider(modifier = Modifier.weight(1f), color = Color.LightGray)
+                            Text(
+                                text = "O CONTINUAR CON",
+                                modifier = Modifier.padding(horizontal = 8.dp),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = if (isDark) Color.LightGray else Color.DarkGray
+                            )
+                            HorizontalDivider(modifier = Modifier.weight(1f), color = Color.LightGray)
+                        }
+                        
+                        Spacer(modifier = Modifier.height(24.dp))
+                        
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            OutlinedButton(
+                                onClick = { /* TODO */ },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(50.dp)
+                                    .shadow(
+                                        elevation = 4.dp,
+                                        shape = RoundedCornerShape(12.dp),
+                                        clip = false
+                                    ),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    containerColor = if (isDark) Color(0xFF333333) else Color(0xFFF7EBEB)
+                                ),
+                                border = null
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    // TODO: Agregar el ícono real de Google
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.icon_google),
+                                        contentDescription = "Google",
+                                        tint = Color.Unspecified // <--- Esto hace que c
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("Google", color = if (isDark) Color.White else Color.Black)
+                                }
+                            }
+                            
+                            OutlinedButton(
+                                onClick = { /* TODO */ },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(50.dp)
+                                    .shadow(
+                                        elevation = 4.dp,
+                                        shape = RoundedCornerShape(12.dp),
+                                        clip = false
+                                    ),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    containerColor = if (isDark) Color(0xFF333333) else Color(0xFFF7EBEB)
+                                ),
+                                border = null
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.icon_apple),
+                                        contentDescription = "Apple",
+                                        tint = if (isDark) Color.White else Color.Black
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("Apple", color = if (isDark) Color.White else Color.Black)
+                                }
+                            }
+                        }
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                LioraPrimaryButton(
-                    text = "Iniciar Sesión",
-                    onClick = onLoginClick,
-                    isLoading = uiState.isLoading
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                TextButton(
-                    onClick = onNavigateToRegister,
-                    enabled = !uiState.isLoading
-                ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = "¿No tienes una cuenta? Regístrate aquí",
+                        text = "¿No tienes una cuenta? ",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        text = "Regístrate",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(start = 4.dp).clickable { onNavigateToRegister() }
                     )
                 }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Text(
+                    text = "Liora aprende, crea, viste",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
             }
         }
     }

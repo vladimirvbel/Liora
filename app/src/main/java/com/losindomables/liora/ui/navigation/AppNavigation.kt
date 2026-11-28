@@ -88,6 +88,8 @@ fun AppNavigation(
                 onNameChanged = authViewModel::onNameChanged,
                 onEmailChanged = authViewModel::onEmailChanged,
                 onPasswordChanged = authViewModel::onPasswordChanged,
+                onConfirmPasswordChanged = authViewModel::onConfirmPasswordChanged,
+                onAcceptTermsChanged = authViewModel::onAcceptTermsChanged,
                 onRegisterClick = authViewModel::onRegisterSubmitted,
                 onNavigateToLogin = {
                     authViewModel.clearGeneralError()

@@ -35,6 +35,14 @@ class AuthViewModel(
         _uiState.update { it.copy(password = password, passwordError = null, generalError = null) }
     }
 
+    fun onConfirmPasswordChanged(confirmPassword: String) {
+        _uiState.update { it.copy(confirmPassword = confirmPassword, confirmPasswordError = null, generalError = null) }
+    }
+
+    fun onAcceptTermsChanged(accept: Boolean) {
+        _uiState.update { it.copy(acceptTerms = accept, termsError = null, generalError = null) }
+    }
+
     fun onLoginSubmitted() {
         if (_uiState.value.isLoading) return // Ignora toques repetidos mientras carga
 
@@ -68,17 +76,23 @@ class AuthViewModel(
         val name = _uiState.value.name
         val email = _uiState.value.email
         val password = _uiState.value.password
+        val confirmPassword = _uiState.value.confirmPassword
+        val acceptTerms = _uiState.value.acceptTerms
 
         val nameErr = AuthValidator.validateName(name)?.message
         val emailErr = AuthValidator.validateEmail(email)?.message
         val passwordErr = AuthValidator.validatePassword(password)?.message
+        val confirmPasswordErr = if (password != confirmPassword) "Las contraseñas no coinciden" else null
+        val termsErr = if (!acceptTerms) "Debes aceptar los términos y condiciones" else null
 
-        if (nameErr != null || emailErr != null || passwordErr != null) {
+        if (nameErr != null || emailErr != null || passwordErr != null || confirmPasswordErr != null || termsErr != null) {
             _uiState.update {
                 it.copy(
                     nameError = nameErr,
                     emailError = emailErr,
-                    passwordError = passwordErr
+                    passwordError = passwordErr,
+                    confirmPasswordError = confirmPasswordErr,
+                    termsError = termsErr
                 )
             }
             return
