@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
  */
 object RetrofitClient {
 
-    private const val BASE_URL = "https://liora-api-backend-1.onrender.com/"
+    private const val BASE_URL = "https://api.liora-app.me/"
 
     // Timeouts largos: Render (plan gratuito) puede tardar en "despertar" (cold start).
     private const val TIMEOUT_SECONDS = 60L
